@@ -74,6 +74,47 @@ Console.WriteLine("Жеткізу түрі: " + type);
 Console.WriteLine("Аймақ: " + zone);
 
 
+
+Func<decimal, decimal> expressRule = p => p * 1.30m;
+Func<decimal, decimal> roundRule = p => Math.Round(p, 2);
+
+decimal result = price;
+result = ApplyRule(result, GetItemsRule(items));
+result = ApplyRule(result, GetTypeRule(type));
+result = ApplyRule(result, GetZoneRule(zone));
+if (express)
+{
+    result = ApplyRule(result, expressRule);
+}
+result = ApplyRule(result, roundRule);
+
+Console.WriteLine("Соңғы баға: " + result.ToString("F2"));
+
+
+
+static decimal ApplyRule(decimal price, Func<decimal, decimal> rule) => rule(price);
+
+static Func<decimal, decimal> GetItemsRule(int items)
+{
+    if (items >= 8) return p => p * 1.20m;
+    if (items >= 4) return p => p * 1.10m;
+    return p => p;
+}
+
+static Func<decimal, decimal> GetTypeRule(DeliveryType type)
+{
+    if (type == DeliveryType.Pickup) return p => p * 0.80m;
+    if (type == DeliveryType.DoorToDoor) return p => p * 1.15m;
+    return p => p;
+}
+
+static Func<decimal, decimal> GetZoneRule(DeliveryZone zone)
+{
+    if (zone == DeliveryZone.OutsideCity) return p => p * 1.25m;
+    return p => p;
+}
+
+
 enum DeliveryType
 {
     Pickup,
